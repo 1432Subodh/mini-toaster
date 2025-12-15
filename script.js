@@ -1,36 +1,39 @@
-//closure toaster
-
-if (!window.tailwind) {
-  const script = document.createElement("script");
-  script.src = "https://cdn.tailwindcss.com";
-  document.head.appendChild(script);
-}
-function createToast(config){
-
-    //something here
-
-    let mainToasterDiv = document.createElement('div');
-    mainToasterDiv.className = 'toaster fixed z-50 top-6 right-6 flex flex-col gap-3 items-end'
-
-    document.body.appendChild(mainToasterDiv);
-    return function (notification){
-        let toaster = document.createElement('div');
-        toaster.className = `flex items-start gap-3 max-w-sm w-full bg-gray-900 text-xs text-white/70 rounded-sm p-3`;
-    
-        mainToasterDiv.appendChild(toaster);
-        console.log('notification', notification);
-        toaster.innerText = notification;
-
-        setTimeout(()=>{
-            toaster.remove();
-        }, config.duration * 1000);
+(function () {
+    // Load Tailwind CDN once
+    if (!document.getElementById('tailwind-cdn')) {
+        const script = document.createElement('script');
+        script.id = 'tailwind-cdn';
+        script.src = 'https://cdn.tailwindcss.com';
+        document.head.appendChild(script);
     }
-}
-window.toaster = createToast({
-    positionX: 'right',
-    positionY: 'top',
-    duration: 2,
-});
 
-toaster('notification message here');
-toaster('notification ad here');
+    function createToast(config) {
+        let container = document.getElementById('mini-toaster');
+
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'mini-toaster';
+            container.className =
+                'fixed top-6 right-6 z-50 flex flex-col gap-3 items-end';
+            document.body.appendChild(container);
+        }
+
+        return function (message) {
+            const toast = document.createElement('div');
+            toast.className =
+                'bg-gray-900 text-white text-xs px-4 py-3 rounded shadow max-w-sm w-full';
+            toast.innerText = message;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, (config.duration || 2) * 1000);
+        };
+    }
+
+    // 👇 EXPOSE GLOBALLY (THIS FIXES THE ERROR)
+    window.toaster = createToast({
+        duration: 2
+    });
+})();
