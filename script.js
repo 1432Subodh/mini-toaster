@@ -26,10 +26,10 @@ function createToast(config){
         }, config.duration * 1000);
     }
 }
-const toaster = createToast({
-     positionX: 'right',
-     positionY: 'top',
-     duration: 2,
+window.toaster = createToast({
+    positionX: 'right',
+    positionY: 'top',
+    duration: 2,
 });
 
 toaster('notification message here');
