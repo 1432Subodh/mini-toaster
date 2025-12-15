@@ -1,56 +1,39 @@
 (function () {
-    // wait until body exists
-    function ready(fn) {
-        if (document.body) fn();
-        else setTimeout(() => ready(fn), 10);
+    // Load Tailwind CDN once
+    if (!document.getElementById('tailwind-cdn')) {
+        const script = document.createElement('script');
+        script.id = 'tailwind-cdn';
+        script.src = 'https://cdn.tailwindcss.com';
+        document.head.appendChild(script);
     }
 
-    ready(function () {
-        // create container once
-        let container = document.getElementById('simple-toaster');
+    function createToast(config) {
+        let container = document.getElementById('mini-toaster');
 
         if (!container) {
             container = document.createElement('div');
-            container.id = 'simple-toaster';
-
-            container.style.position = 'fixed';
-            container.style.top = '20px';
-            container.style.right = '20px';
-            container.style.zIndex = '9999';
-            container.style.display = 'flex';
-            container.style.flexDirection = 'column';
-            container.style.gap = '10px';
-
+            container.id = 'mini-toaster';
+            container.className =
+                'fixed top-6 right-6 z-50 flex flex-col gap-3 items-end';
             document.body.appendChild(container);
         }
 
-        // expose global function
-        window.toaster = function (message, duration = 2000) {
+        return function (message) {
             const toast = document.createElement('div');
-
-            toast.style.background = '#111';
-            toast.style.color = '#fff';
-            toast.style.fontSize = '12px';
-            toast.style.padding = '10px 14px';
-            toast.style.borderRadius = '4px';
-            toast.style.maxWidth = '260px';
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.2s ease';
-
+            toast.className =
+                'bg-gray-900 text-white text-xs px-4 py-3 rounded shadow max-w-sm w-full';
             toast.innerText = message;
 
             container.appendChild(toast);
 
-            // fade in
-            requestAnimationFrame(() => {
-                toast.style.opacity = '1';
-            });
-
-            // remove
             setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 200);
-            }, duration);
+                toast.remove();
+            }, (config.duration || 2) * 1000);
         };
+    }
+
+    // 👇 EXPOSE GLOBALLY (THIS FIXES THE ERROR)
+    window.toaster = createToast({
+        duration: 2
     });
 })();
